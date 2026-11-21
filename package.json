@@ -1,0 +1,10 @@
+{
+  "name": "usdtchk-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "链上地址查询（方案B · Vercel）",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  }
+}

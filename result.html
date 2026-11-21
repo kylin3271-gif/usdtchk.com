@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>地址交易明细与收支统计 - 查地址</title>
+<meta name="description" content="查询指定波场或以太坊地址的 USDT / TRX 交易明细，统计收入与支出。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%234e6ef2%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 fill=%22%23fff%22 text-anchor=%22middle%22%3ET%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<div class="main_wrapper">
+
+  <header class="site-head">
+    <div class="site-head-in">
+      <div class="site-logo">T</div>
+      <div class="site-name">查地址</div>
+      <div class="right">
+        <a class="head-btn" href="batch.html" style="line-height:38px;text-decoration:none">批量查询余额和多签状态</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- ===== 地址信息 ===== -->
+    <section class="addr-panel">
+      <div class="addr-line">
+        <span class="lb">钱包地址：</span>
+        <span class="addr-val" id="addrText"></span>
+        <button class="mini-btn" id="copyAddr" type="button">复制</button>
+        <span class="lb" id="chainTag" style="color:#9e9e9e"></span>
+        <a class="addr-back" href="index.html">← 重新查询</a>
+      </div>
+    </section>
+
+    <!-- ===== 概览 ===== -->
+    <section class="overview">
+      <div class="ov-grid">
+        <div class="ov-item"><span class="k">TRX 数量：</span><span class="v" id="ovTrx">—</span></div>
+        <div class="ov-item"><span class="k">USDT 数量：</span><span class="v" id="ovUsdt">—</span></div>
+        <div class="ov-item">
+          <span class="k">能量：</span><span class="v" id="ovEnergy">—</span>
+          <span class="q" title="发送 USDT 会消耗能量，能量不足时燃烧 TRX 抵扣；接收方 USDT 为 0 时可能消耗双倍能量">?</span>
+        </div>
+        <div class="ov-item"><span class="k">激活时间：</span><span class="v" id="ovActive">—</span></div>
+        <div class="ov-item"><span class="k">CNY 价值：</span><span class="v" id="ovCny">—</span></div>
+        <div class="ov-item"><span class="k">是否多签：</span><span class="v" id="ovMulti">—</span></div>
+      </div>
+    </section>
+
+    <!-- ===== 筛选 ===== -->
+    <section class="filter-bar">
+      <div class="tabs" id="typeTabs">
+        <button type="button" data-type="USDT" class="on">USDT</button>
+        <button type="button" data-type="TRX" id="tabNative">TRX</button>
+      </div>
+
+      <select class="fl-select" id="fDir">
+        <option value="全部">全部方向</option>
+        <option value="in">仅接收</option>
+        <option value="out">仅转出</option>
+      </select>
+
+      <input class="fl-input" type="text" id="fMin" placeholder="最小数量">
+      <span class="dash">—</span>
+      <input class="fl-input" type="text" id="fMax" placeholder="最大数量">
+
+      <input class="fl-input" type="date" id="fStart" style="width:140px" title="开始日期">
+      <span class="dash">—</span>
+      <input class="fl-input" type="date" id="fEnd" style="width:140px" title="结束日期">
+
+      <div class="fl-right">
+        <button class="btn-ghost" id="fReset" type="button">重置</button>
+        <button class="btn-main" id="fApply" type="button">筛选</button>
+      </div>
+    </section>
+
+    <div class="sum-line" id="sumLine">正在读取…</div>
+
+    <!-- ===== 列表 ===== -->
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>交易时间</th>
+            <th>方向</th>
+            <th>交易对象</th>
+            <th>交易数量</th>
+            <th>区块哈希值</th>
+            <th>交易 ID 哈希</th>
+            <th>区块高度</th>
+          </tr>
+        </thead>
+        <tbody id="txBody">
+          <tr><td colspan="7" class="tbl-empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager" id="txPager"></div>
+
+    <div class="notice">
+      提示：哈希默认只显示末 6 位，点击可展开完整值并自动复制；点击区块高度可查看出块信息。金额为链上原始记录，实际到账以链上确认为准。
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="site-foot-in">
+      <div>
+        <div class="brand">查地址</div>
+        <p class="note">公开链上数据查询工具，仅做数据展示，不涉及交易、支付与资金流转。</p>
+      </div>
+      <div class="links">
+        <a href="index.html">返回首页</a>
+        <a href="batch.html">批量查询</a>
+      </div>
+    </div>
+    <div class="site-foot-legal">
+      上线前请替换：运营主体名称 · ICP 备案号 · 联系方式。本站不提供 USDT / 虚拟货币兑换、代收代付与资金托管服务。
+    </div>
+  </footer>
+</div>
+
+<!-- 区块详情弹层 -->
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <h4 id="modalTitle">区块详情</h4>
+    <div id="modalBody"></div>
+    <button class="btn-main close" type="button" onclick="__closeModal()">关闭</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/mock.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/result.js"></script>
+</body>
+</html>

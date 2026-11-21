@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>批量查询 USDT 地址余额与多签状态 - 查地址</title>
+<meta name="description" content="批量查询 TRON 地址的 TRX / USDT / USDD 余额与多签状态，单次最多 200 个地址。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%234e6ef2%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 fill=%22%23fff%22 text-anchor=%22middle%22%3ET%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<div class="main_wrapper">
+
+  <header class="site-head">
+    <div class="site-head-in">
+      <div class="site-logo">T</div>
+      <div class="site-name">查地址</div>
+      <div class="right">
+        <a class="head-btn" href="index.html" style="line-height:38px;text-decoration:none">单地址查询</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+    <section class="batch-hero">
+      <h1>批量查询地址余额和多签状态</h1>
+      <p class="sub">仅支持 TRON 地址（T 开头 34 位），一行一个，单次最多 200 个</p>
+    </section>
+
+    <!-- ===== 输入 ===== -->
+    <div class="ta-box">
+      <textarea id="addrList" spellcheck="false"
+        placeholder="一行一个地址&#10;示例：TXyz9Kq3mVd7bNp2Ls8Ra5Wu1Ec6Ht4GfKD&#10;仅支持 T 开头的 TRON 地址"></textarea>
+      <div class="ta-bar">
+        <span style="color:#9e9e9e;font-size:12.5px">非法行会被自动跳过</span>
+        <span class="cnt" id="lineCount">0 / 200</span>
+      </div>
+    </div>
+
+    <div class="batch-actions">
+      <button class="btn-lg" id="btnRun" type="button">开始查询</button>
+      <button class="btn-lg" id="btnStop" type="button" style="display:none;background:#dd3545">停止</button>
+      <button class="btn-ghost" id="btnSample" type="button">填入示例</button>
+      <button class="btn-ghost" id="btnClear" type="button">清空</button>
+      <span id="batchTip" style="color:#9e9e9e;font-size:12.5px"></span>
+    </div>
+
+    <div class="progress" id="progress"><i id="progressBar"></i></div>
+
+    <!-- ===== 结果 ===== -->
+    <div id="batchResult" style="display:none">
+      <div class="batch-sum">
+        <div><div class="k">地址总数</div><div class="v" id="sumTotal">0</div></div>
+        <div><div class="k">TRX 合计</div><div class="v" id="sumTrx">0.00</div></div>
+        <div><div class="k">USDT 合计</div><div class="v" id="sumUsdt" style="color:#198754">0.00</div></div>
+        <div><div class="k">USDD 合计</div><div class="v" id="sumUsdd">0.00</div></div>
+        <div><div class="k">成功 / 失败</div><div class="v" id="sumOk">0 / 0</div></div>
+      </div>
+
+      <div class="batch-actions">
+        <button class="btn-ghost" id="btnCopy" type="button">复制结果</button>
+        <button class="btn-ghost" id="btnCsv" type="button">导出 CSV</button>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table id="batchTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="sortable" data-k="address">地址 <span class="ar">⇅</span></th>
+              <th class="sortable" data-k="trx">TRX <span class="ar">⇅</span></th>
+              <th class="sortable" data-k="usdt">USDT <span class="ar">⇅</span></th>
+              <th class="sortable" data-k="usdd">USDD <span class="ar">⇅</span></th>
+              <th class="sortable" data-k="multi">多签 <span class="ar">⇅</span></th>
+              <th class="sortable" data-k="status">状态 <span class="ar">⇅</span></th>
+            </tr>
+          </thead>
+          <tbody id="batchBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="notice">
+      批量结果仅用于核对余额，不构成对地址归属、信用或交易对手方的任何担保。请勿将他人的地址列表用于骚扰、推销或转卖数据。
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <div class="site-foot-in">
+      <div>
+        <div class="brand">查地址</div>
+        <p class="note">公开链上数据查询工具，仅做数据展示，不涉及交易、支付与资金流转。</p>
+      </div>
+      <div class="links">
+        <a href="index.html">返回首页</a>
+        <a href="batch.html">批量查询</a>
+      </div>
+    </div>
+    <div class="site-foot-legal">
+      上线前请替换：运营主体名称 · ICP 备案号 · 联系方式。本站不提供 USDT / 虚拟货币兑换、代收代付与资金托管服务。
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/mock.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/batch.js"></script>
+</body>
+</html>

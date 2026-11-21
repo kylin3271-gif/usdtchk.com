@@ -1,179 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>查询USDT交易与快速统计收支 - 查地址</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#f0f3f8;color:#111;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:40px}
-a{color:inherit;text-decoration:none}
-.top{background:#fff;border-bottom:1px solid #eef1f5}
-.top-in{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;flex-shrink:0;cursor:pointer;user-select:none}
-.top-right{display:flex;align-items:center;gap:8px}
-.lang-wrap{display:flex;align-items:center;gap:4px;background:#f1f5f9;border:1px solid #e2e6ec;border-radius:999px;padding:4px 8px 4px 10px;flex-shrink:0}
-.lang-wrap span{font-size:14px}
-.lang-sel{border:0;background:transparent;font-size:13px;font-weight:600;outline:none;cursor:pointer;max-width:110px}
-.batch-top{background:#2f7bff;color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;white-space:nowrap}
-.backup-top{background:#fff;color:#666;border:1px dashed #dbe1ea;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;white-space:nowrap;cursor:default}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-h1{font-size:28px;font-weight:800;text-align:center;margin:36px 0 8px;line-height:1.3}
-.sub{font-size:13px;color:#888;text-align:center;margin-bottom:20px}
-.search{display:flex;gap:10px;background:#fff;border-radius:12px;padding:8px 8px 8px 18px;box-shadow:0 2px 10px rgba(0,0,0,.04);max-width:760px;margin:0 auto}
-.search input{flex:1;border:0;outline:none;font-size:15px;min-width:0}
-.search button{background:#2f7bff;color:#fff;border:0;border-radius:9px;padding:12px 28px;font-size:15px;font-weight:700;cursor:pointer}
-.search button:disabled{opacity:.6}
-.prices{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 8px}
-.price{background:#fff;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 6px rgba(0,0,0,.03)}
-.price .ico{width:36px;height:36px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
-.price .ico.usdt{background:#26a17b}.price .ico.btc{background:#f7931a}.price .ico.trx{background:#ff2b2b}.price .ico.eth{background:#627eea}
-.price small{display:block;font-size:12px;color:#888}
-.price b{font-size:16px}
-.price-tip{font-size:12px;color:#aaa;text-align:center;line-height:1.6;margin:6px 0 18px}
-.promos{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.promo{background:#fff;border-radius:12px;padding:22px 10px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.03);border:1px dashed #dbe1ea;cursor:default}
-.promo .big{font-size:26px;opacity:.6}
-.promo b{display:block;font-size:14px;color:#666;margin:10px 0 4px}
-.promo span{font-size:12px;color:#aaa}
-.foot{font-size:12px;color:#aaa;text-align:center;margin-top:18px}
-.card{background:#fff;border-radius:14px;padding:16px;margin:16px 0;box-shadow:0 1px 6px rgba(0,0,0,.03)}
-.wallet-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.wallet-head b{font-size:13px;word-break:break-all}
-.wallet-head button{background:#fff;border:1px solid #e2e6ec;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
-.wallet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:12px;font-size:13px}
-.wallet-grid span{color:#666}.wallet-grid b{float:right}.wallet-grid .red{color:#e11d48}
-.filter{display:flex;gap:6px;background:#f8fafc;border:1px solid #eef1f5;border-radius:10px;padding:7px 8px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
-.filter::-webkit-scrollbar{display:none}
-.filter .tab{border:0;background:#fff;border:1px solid #e2e6ec;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
-.filter .tab.on{background:#2f7bff;color:#fff;border-color:#2f7bff}
-.filter select,.filter input{border:1px solid #e2e6ec;border-radius:8px;padding:6px 7px;font-size:13px;background:#fff;outline:none;min-width:0}
-.filter select{width:130px}.filter input{width:86px}.filter .date{width:118px}.filter .sep{color:#999}
-.filter .mini{border:1px solid #e2e6ec;background:#fff;border-radius:8px;padding:6px 9px;font-size:13px;cursor:pointer;white-space:nowrap}
-.filter .go{background:#111;color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
-.summary{font-size:13px;margin:10px 2px 0}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;min-width:720px}
-th{color:#666;font-weight:500;text-align:left;padding:9px 8px;border-bottom:1px solid #eee;white-space:nowrap}
-td{padding:10px 8px;border-bottom:1px solid #f1f2f4}
-.table-wrap{overflow-x:auto}
-.addr{font-family:monospace;word-break:break-all;max-width:180px}
-.hash{color:#2f7bff;font-family:monospace;cursor:pointer;white-space:nowrap}
-.pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:700;font-size:13px;white-space:nowrap}
-.pill.in{background:#dcfce7;color:#15803d}.pill.out{background:#fee2e2;color:#b91c1c}.pill.trx{background:#eef2ff;color:#3730a3}
-.empty{padding:28px 0;text-align:center;color:#888;font-size:13px}
-.pager{display:flex;gap:8px;justify-content:center;margin:14px 0 4px;flex-wrap:wrap}
-.pager button{border:1px solid #e2e6ec;background:#fff;border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer}
-.pager button.on{background:#2f7bff;color:#fff;border-color:#2f7bff}
-.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.actions button{border:1px solid #e2e6ec;background:#fff;border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer}
-@media(max-width:640px){
-  h1{font-size:21px;margin:24px 0 6px}
-  .prices{grid-template-columns:repeat(2,1fr)}
-  .promos{grid-template-columns:repeat(2,1fr)}
-  .wallet-grid{grid-template-columns:1fr}
-  .wallet-grid b{float:none;margin-left:6px}
-  .search button{padding:12px 18px}
-  .batch-top,.backup-top{padding:7px 12px;font-size:12px}
-  .lang-sel{max-width:92px}
-}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>USDT交易记录查询_USDT转账记录查询_哈希值查询 - 查地址</title>
+<meta name="description" content="查询波场 TRON 与以太坊地址的 USDT / TRX 交易明细，快速统计收入与支出，支持批量余额与多签状态查询。仅提供公开链上数据查询，不提供交易与资金服务。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%23e60012%22/%3E%3Ctext x=%2216%22 y=%2223%22 font-size=%2220%22 font-weight=%22bold%22 fill=%22%23fff%22 text-anchor=%22middle%22%3ET%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
-<body>
-<div class="top"><div class="top-in">
-  <div class="logo" onclick="goHome()" title="返回首页">
-    <div style="width:28px;height:28px;border-radius:50%;background:#FF0013;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;line-height:1;flex-shrink:0">T</div>
-    <span data-i18n="logo">查地址</span>
-  </div>
-  <div class="top-right">
-    <div class="lang-wrap"><span>🌐</span><select id="langSelect" class="lang-sel" onchange="setLang(this.value)">
-      <option value="zh">简体中文</option><option value="hant">繁體中文</option><option value="en">English</option><option value="th">ไทย</option><option value="vi">Tiếng Việt</option><option value="id">Bahasa Indonesia</option>
-    </select></div>
-    <a id="batchBtn" href="/balances.html" class="batch-top" data-i18n="batchBtn">批量查询余额和多签状态</a>
-    <span id="backupBtn" class="backup-top" style="display:none" data-i18n="backup">备用网站</span>
-  </div>
-</div></div>
+<body class="page-home">
+<div class="wrap">
 
-<div id="home" class="wrap">
-  <h1 data-i18n="h1">查询USDT交易与快速统计收支</h1>
-  <p class="sub" data-i18n="sub">支持 TRX / ETH 地址 · 后端统一查询</p>
-  <div class="search">
-    <input id="addrInput" data-i18n-ph="searchPh" placeholder="请输入需查询的波场TRX或以太坊ETH地址" autocomplete="off">
-    <button id="searchBtn" onclick="doSearch()" data-i18n="searchBtn">搜索</button>
-  </div>
-  <div class="prices">
-    <div class="price"><span class="ico usdt">T</span><div><small>USDT</small><b id="pUsdt">6.66 ¥</b></div></div>
-    <div class="price"><span class="ico btc">₿</span><div><small>BTC</small><b id="pBtc">425,033 ¥</b></div></div>
-    <div class="price"><span class="ico trx">T</span><div><small>TRX</small><b id="pTrx">2.07 ¥</b></div></div>
-    <div class="price"><span class="ico eth">◆</span><div><small>ETH</small><b id="pEth">12,034 ¥</b></div></div>
-  </div>
-  <p class="price-tip" data-i18n="priceTip">实时获取欧易前10名商家平均价格<br>（仅供查询不支持交易）</p>
-  <div class="promos">
-    <div class="promo"><div class="big">📌</div><b data-i18n="promo1">推广位 1</b><span data-i18n="coming">待上新</span></div>
-    <div class="promo"><div class="big">📌</div><b data-i18n="promo2">推广位 2</b><span data-i18n="coming">待上新</span></div>
-    <div class="promo"><div class="big">📌</div><b data-i18n="promo3">推广位 3</b><span data-i18n="coming">待上新</span></div>
-    <div class="promo"><div class="big">📌</div><b data-i18n="promo4">推广位 4</b><span data-i18n="coming">待上新</span></div>
-  </div>
-  <p class="foot" data-i18n="foot">数据来源：后端 TronGrid + Blockscout · 仅供查询 · 风险仅基于链上信号</p>
-</div>
-
-<div id="resultPage" class="wrap" style="display:none">
-  <div class="card">
-    <div class="wallet-head"><b id="wAddr">—</b><button onclick="copyAddr()" data-i18n="copy">复制地址</button></div>
-    <div class="wallet-grid">
-      <div><span data-i18n="trxAmt">TRX数量：</span><b id="wTrx">—</b></div>
-      <div><span data-i18n="usdtAmt">USDT数量：</span><b id="wUsdt">—</b></div>
-      <div><span data-i18n="energy">能量：</span><b id="wEnergy">—</b></div>
-      <div><span data-i18n="active">激活时间：</span><b id="wActive">—</b></div>
-      <div><span data-i18n="cny">CNY价值：</span><b id="wCny">—</b></div>
-      <div><span data-i18n="multi">是否多签：</span><b id="wMulti">—</b></div>
+  <!-- ===== 顶栏 ===== -->
+  <header class="hdr">
+    <div class="hdr-in">
+      <a class="brand" href="index.html">
+        <span class="logo">T</span>
+        <span class="brand-name">查地址</span>
+      </a>
+      <div class="hdr-right">
+        <div class="lang-pill">
+          <svg class="globe" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="#6b7480" stroke-width="1.4"/>
+            <ellipse cx="12" cy="12" rx="4.2" ry="10" fill="none" stroke="#6b7480" stroke-width="1.2"/>
+            <path d="M2.5 12h19M4 7.2h16M4 16.8h16" stroke="#6b7480" stroke-width="1.2" fill="none"/>
+          </svg>
+          <select id="langSel" aria-label="语言">
+            <option value="zh-CN">简体中文</option>
+          </select>
+          <svg class="caret" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+            <path d="M6 9.5l6 6 6-6" fill="none" stroke="#6b7480" stroke-width="2"/>
+          </svg>
+        </div>
+        <a class="batch-pill" href="batch.html">批量查询余额和多签状态</a>
+      </div>
     </div>
-  </div>
-  <div class="filter">
-    <button class="tab on" data-coin="USDT" onclick="setCoin('USDT',this)">USDT</button>
-    <button class="tab" data-coin="TRX" onclick="setCoin('TRX',this)">TRX</button>
-    <select id="fType"><option value="all" data-i18n="typeAll">收支类型 · 全部</option><option value="in" data-i18n="typeIn">收入</option><option value="out" data-i18n="typeOut">支出</option></select>
-    <input id="fMin" type="number" step="any" placeholder="0.001" value="0.001"><span class="sep">-</span>
-    <input id="fMax" type="number" step="any" data-i18n-ph="maxAmt" placeholder="最大数量">
-    <input class="date" id="fStart" type="date"><span class="sep">-</span><input class="date" id="fEnd" type="date">
-    <button class="mini" onclick="clearFilter()" data-i18n="clear">清空</button><button class="go" onclick="applyFilter()" data-i18n="filter">筛选</button>
-  </div>
-  <div class="summary" id="summary">—</div>
-  <div class="card" style="padding:8px 10px">
-    <div class="table-wrap"><table><thead><tr><th data-i18n="thTime">交易时间</th><th data-i18n="thCounter">交易对象</th><th data-i18n="thCoin">币种</th><th data-i18n="thAmt">交易数量</th><th data-i18n="thBlockHash">区块哈希值</th><th data-i18n="thTxHash">交易ID哈希</th><th data-i18n="thBlock">区块高度</th></tr></thead><tbody id="tbody"></tbody></table></div>
-    <div id="empty" class="empty" style="display:none" data-i18n="empty">暂无该币种交易记录</div>
-    <div class="pager" id="pager"></div>
-    <div class="actions"><button onclick="showAll()" data-i18n="showAll">显示全部</button><button onclick="exportExcel()" data-i18n="export">导出 Excel</button></div>
-  </div>
+  </header>
+
+  <main class="main">
+    <!-- ===== 标题 ===== -->
+    <h1 class="title">查询USDT交易与快速统计收支</h1>
+    <p class="subtitle">支持 TRX / ETH 地址 · 后端统一查询</p>
+
+    <!-- ===== 搜索 ===== -->
+    <form class="search-card" id="searchForm" autocomplete="off">
+      <input id="addrInput" type="text" spellcheck="false"
+             placeholder="请输入需查询的波场TRX或以太坊ETH地址">
+      <button type="submit" id="searchBtn">搜索</button>
+    </form>
+    <div class="form-err" id="formErr"></div>
+
+    <!-- ===== 报价条 ===== -->
+    <div class="price-cards" id="priceStrip"></div>
+    <p class="pm-note" id="priceNote">
+      <span class="l1" id="priceNoteLine1">实时获取欧易前10名商家平均价格</span>
+      <span class="l2">（仅供查询不支持交易）</span>
+    </p>
+
+    <!-- ===== 推广位（原站此处为 4 个导流外链，按截图改为招租位） ===== -->
+    <div class="promo-grid">
+      <div class="promo-card">
+        <svg class="pin" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 2.2c-3.2 0-5.8 2.5-5.8 5.7 0 4.3 5.8 10.5 5.8 10.5s5.8-6.2 5.8-10.5c0-3.2-2.6-5.7-5.8-5.7z" fill="#f08a4b"/>
+          <circle cx="12" cy="7.6" r="1.9" fill="#fff"/>
+          <path d="M11.2 13.6h1.6l.6 6h-2.8z" fill="#e0743a"/>
+        </svg>
+        <div class="pt">推广位 1</div>
+        <div class="pd">待上新</div>
+      </div>
+      <div class="promo-card">
+        <svg class="pin" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 2.2c-3.2 0-5.8 2.5-5.8 5.7 0 4.3 5.8 10.5 5.8 10.5s5.8-6.2 5.8-10.5c0-3.2-2.6-5.7-5.8-5.7z" fill="#f08a4b"/>
+          <circle cx="12" cy="7.6" r="1.9" fill="#fff"/>
+          <path d="M11.2 13.6h1.6l.6 6h-2.8z" fill="#e0743a"/>
+        </svg>
+        <div class="pt">推广位 2</div>
+        <div class="pd">待上新</div>
+      </div>
+      <div class="promo-card">
+        <svg class="pin" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 2.2c-3.2 0-5.8 2.5-5.8 5.7 0 4.3 5.8 10.5 5.8 10.5s5.8-6.2 5.8-10.5c0-3.2-2.6-5.7-5.8-5.7z" fill="#f08a4b"/>
+          <circle cx="12" cy="7.6" r="1.9" fill="#fff"/>
+          <path d="M11.2 13.6h1.6l.6 6h-2.8z" fill="#e0743a"/>
+        </svg>
+        <div class="pt">推广位 3</div>
+        <div class="pd">待上新</div>
+      </div>
+      <div class="promo-card">
+        <svg class="pin" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 2.2c-3.2 0-5.8 2.5-5.8 5.7 0 4.3 5.8 10.5 5.8 10.5s5.8-6.2 5.8-10.5c0-3.2-2.6-5.7-5.8-5.7z" fill="#f08a4b"/>
+          <circle cx="12" cy="7.6" r="1.9" fill="#fff"/>
+          <path d="M11.2 13.6h1.6l.6 6h-2.8z" fill="#e0743a"/>
+        </svg>
+        <div class="pt">推广位 4</div>
+        <div class="pd">待上新</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot-line">数据来源：后端 TronGrid + Blockscout · 仅提供查询 · 风险仅基于链上信号</footer>
 </div>
-<script>
-const I18N={
-zh:{logo:"查地址",batchBtn:"批量查询余额和多签状态",backup:"备用网站",h1:"查询USDT交易与快速统计收支",sub:"支持 TRX / ETH 地址 · 后端统一查询",searchPh:"请输入需查询的波场TRX或以太坊ETH地址",searchBtn:"搜索",searching:"查询中…",priceTip:"实时获取欧易前10名商家平均价格<br>（仅供查询不支持交易）",promo1:"推广位 1",promo2:"推广位 2",promo3:"推广位 3",promo4:"推广位 4",coming:"待上新",foot:"数据来源：后端 TronGrid + Blockscout · 仅供查询 · 风险仅基于链上信号",copy:"复制地址",copied:"已复制",trxAmt:"TRX数量：",usdtAmt:"USDT数量：",energy:"能量：",active:"激活时间：",cny:"CNY价值：",multi:"是否多签：",yes:"是",no:"否",typeAll:"收支类型 · 全部",typeIn:"收入",typeOut:"支出",maxAmt:"最大数量",clear:"清空",filter:"筛选",empty:"暂无该币种交易记录",showAll:"显示全部",export:"导出 Excel",total:"共计",income:"收入",expense:"支出",prev:"上一页",next:"下一页",errEmpty:"请输入有效的钱包地址(T或0开头)",errLen34:"请输入34位钱包地址",errLen42:"请输入42位钱包地址",errFail:"查询失败，请重试"},
-hant:{logo:"查地址",batchBtn:"批量查詢餘額和多簽狀態",backup:"備用網站",h1:"查詢USDT交易與快速統計收支",sub:"支援 TRX / ETH 地址 · 後端統一查詢",searchPh:"請輸入需查詢的波場TRX或以太坊ETH地址",searchBtn:"搜尋",searching:"查詢中…",priceTip:"即時獲取歐易前10名商家平均價格<br>（僅供查詢不支援交易）",promo1:"推廣位 1",promo2:"推廣位 2",promo3:"推廣位 3",promo4:"推廣位 4",coming:"待上新",foot:"數據來源：後端 TronGrid + Blockscout · 僅供查詢 · 風險僅基於鏈上訊號",copy:"複製地址",copied:"已複製",trxAmt:"TRX數量：",usdtAmt:"USDT數量：",energy:"能量：",active:"啟用時間：",cny:"CNY價值：",multi:"是否多簽：",yes:"是",no:"否",typeAll:"收支類型 · 全部",typeIn:"收入",typeOut:"支出",maxAmt:"最大數量",clear:"清空",filter:"篩選",empty:"暫無該幣種交易記錄",showAll:"顯示全部",export:"匯出 Excel",total:"共計",income:"收入",expense:"支出",prev:"上一頁",next:"下一頁",errEmpty:"請輸入有效的錢包地址(T或0開頭)",errLen34:"請輸入34位錢包地址",errLen42:"請輸入42位錢包地址",errFail:"查詢失敗，請重試"},
-en:{logo:"Check Address",batchBtn:"Batch Balance & Multi-Sig",backup:"Backup Site",h1:"Check USDT Transactions & Income / Expense Stats",sub:"Supports TRX / ETH addresses · Unified backend query",searchPh:"Enter TRON TRX or Ethereum ETH address",searchBtn:"Search",searching:"Searching…",priceTip:"Live average price from top 10 OKX merchants<br>(For inquiry only, no trading)",promo1:"Ad Slot 1",promo2:"Ad Slot 2",promo3:"Ad Slot 3",promo4:"Ad Slot 4",coming:"Coming Soon",foot:"Data: TronGrid + Blockscout · For inquiry only · Risk based on on-chain signals",copy:"Copy Address",copied:"Copied",trxAmt:"TRX Balance:",usdtAmt:"USDT Balance:",energy:"Energy:",active:"Activated At:",cny:"CNY Value:",multi:"Multi-Sig:",yes:"Yes",no:"No",typeAll:"Type · All",typeIn:"Income",typeOut:"Expense",maxAmt:"Max amount",clear:"Clear",filter:"Filter",empty:"No records for this coin",showAll:"Show All",export:"Export Excel",total:"Total",income:"Income",expense:"Expense",prev:"Prev",next:"Next",errEmpty:"Please enter a valid wallet address (starts with T or 0)",errLen34:"Please enter a 34-character address",errLen42:"Please enter a 42-character address",errFail:"Query failed, please retry"},
-th:{logo:"เช็คที่อยู่",batchBtn:"เช็คยอด & Multi-Sig หลายรายการ",backup:"เว็บสำรอง",h1:"เช็คธุรกรรม USDT & สรุปรับ-จ่าย",sub:"รองรับที่อยู่ TRX / ETH · ค้นหาผ่าน Backend",searchPh:"กรอกที่อยู่ TRON TRX หรือ Ethereum ETH",searchBtn:"ค้นหา",searching:"กำลังค้นหา…",priceTip:"ราคาเฉลี่ยจากร้านค้า 10 อันดับแรกบน OKX<br>(สำหรับตรวจสอบเท่านั้น ไม่รองรับเทรด)",promo1:"พื้นที่โฆษณา 1",promo2:"พื้นที่โฆษณา 2",promo3:"พื้นที่โฆษณา 3",promo4:"พื้นที่โฆษณา 4",coming:"เร็วๆ นี้",foot:"ข้อมูล: TronGrid + Blockscout · สำหรับตรวจสอบเท่านั้น",copy:"คัดลอกที่อยู่",copied:"คัดลอกแล้ว",trxAmt:"จำนวน TRX:",usdtAmt:"จำนวน USDT:",energy:"พลังงาน:",active:"เวลาเปิดใช้งาน:",cny:"มูลค่า CNY:",multi:"Multi-Sig:",yes:"ใช่",no:"ไม่",typeAll:"ประเภท · ทั้งหมด",typeIn:"รับเข้า",typeOut:"จ่ายออก",maxAmt:"จำนวนสูงสุด",clear:"ล้าง",filter:"กรอง",empty:"ไม่มีรายการของเหรียญนี้",showAll:"แสดงทั้งหมด",export:"ส่งออก Excel",total:"ทั้งหมด",income:"รับเข้า",expense:"จ่ายออก",prev:"ก่อนหน้า",next:"ถัดไป",errEmpty:"กรุณากรอกที่อยู่กระเป๋าที่ถูกต้อง (ขึ้นต้นด้วย T หรือ 0)",errLen34:"กรุณากรอกที่อยู่ 34 หลัก",errLen42:"กรุณากรอกที่อยู่ 42 หลัก",errFail:"ค้นหาไม่สำเร็จ ลองอีกครั้ง"},
-vi:{logo:"Tra cứu địa chỉ",batchBtn:"Tra cứu hàng loạt & Đa chữ ký",backup:"Trang dự phòng",h1:"Tra cứu giao dịch USDT & Thống kê thu / chi",sub:"Hỗ trợ địa chỉ TRX / ETH · Truy vấn backend thống nhất",searchPh:"Nhập địa chỉ TRON TRX hoặc Ethereum ETH",searchBtn:"Tìm kiếm",searching:"Đang tìm…",priceTip:"Giá trung bình từ 10 thương gia hàng đầu OKX<br>(Chỉ để tra cứu, không giao dịch)",promo1:"Vị trí quảng cáo 1",promo2:"Vị trí quảng cáo 2",promo3:"Vị trí quảng cáo 3",promo4:"Vị trí quảng cáo 4",coming:"Sắp ra mắt",foot:"Nguồn: TronGrid + Blockscout · Chỉ để tra cứu",copy:"Sao chép địa chỉ",copied:"Đã sao chép",trxAmt:"Số lượng TRX:",usdtAmt:"Số lượng USDT:",energy:"Năng lượng:",active:"Thời gian kích hoạt:",cny:"Giá trị CNY:",multi:"Đa chữ ký:",yes:"Có",no:"Không",typeAll:"Loại · Tất cả",typeIn:"Thu vào",typeOut:"Chi ra",maxAmt:"Số lượng tối đa",clear:"Xóa",filter:"Lọc",empty:"Không có giao dịch cho coin này",showAll:"Hiện tất cả",export:"Xuất Excel",total:"Tổng cộng",income:"Thu vào",expense:"Chi ra",prev:"Trang trước",next:"Trang sau",errEmpty:"Vui lòng nhập địa chỉ ví hợp lệ (bắt đầu bằng T hoặc 0)",errLen34:"Vui lòng nhập địa chỉ 34 ký tự",errLen42:"Vui lòng nhập địa chỉ 42 ký tự",errFail:"Tra cứu thất bại, vui lòng thử lại"},
-id:{logo:"Cek Alamat",batchBtn:"Cek Massal Saldo & Multi-Sig",backup:"Situs Cadangan",h1:"Cek Transaksi USDT & Statistik Pemasukan / Pengeluaran",sub:"Mendukung alamat TRX / ETH · Query backend terpadu",searchPh:"Masukkan alamat TRON TRX atau Ethereum ETH",searchBtn:"Cari",searching:"Mencari…",priceTip:"Harga rata-rata dari 10 merchant teratas OKX<br>(Hanya untuk pengecekan, bukan trading)",promo1:"Slot Iklan 1",promo2:"Slot Iklan 2",promo3:"Slot Iklan 3",promo4:"Slot Iklan 4",coming:"Segera Hadir",foot:"Sumber: TronGrid + Blockscout · Hanya untuk pengecekan",copy:"Salin Alamat",copied:"Tersalin",trxAmt:"Jumlah TRX:",usdtAmt:"Jumlah USDT:",energy:"Energi:",active:"Waktu Aktivasi:",cny:"Nilai CNY:",multi:"Multi-Sig:",yes:"Ya",no:"Tidak",typeAll:"Jenis · Semua",typeIn:"Pemasukan",typeOut:"Pengeluaran",maxAmt:"Jumlah maks",clear:"Hapus",filter:"Filter",empty:"Tidak ada transaksi untuk coin ini",showAll:"Tampilkan Semua",export:"Ekspor Excel",total:"Total",income:"Pemasukan",expense:"Pengeluaran",prev:"Sebelumnya",next:"Berikutnya",errEmpty:"Masukkan alamat dompet yang valid (diawali T atau 0)",errLen34:"Masukkan alamat 34 karakter",errLen42:"Masukkan alamat 42 karakter",errFail:"Pencarian gagal, coba lagi"}
-};
-let curLang=localStorage.getItem('lang')||(()=>{const l=(navigator.language||'en').toLowerCase();if(l==='zh-tw'||l==='zh-hk'||l==='zh-mo'||l==='zh-hant')return 'hant';if(l.startsWith('zh'))return 'zh';if(l.startsWith('th'))return 'th';if(l.startsWith('vi'))return 'vi';if(l.startsWith('id')||l.startsWith('ms'))return 'id';return 'en';})();
-function t(k){return (I18N[curLang]||I18N.en)[k]||I18N.en[k]||k;}
-function setLang(l){curLang=l;localStorage.setItem('lang',l);document.getElementById('langSelect').value=l;document.querySelectorAll('[data-i18n]').forEach(e=>{e.innerHTML=t(e.dataset.i18n);});document.querySelectorAll('[data-i18n-ph]').forEach(e=>{e.placeholder=t(e.dataset.i18nPh);});if(curList.length) render();if(document.getElementById('resultPage').style.display==='block') document.getElementById('searchBtn').textContent=t('searchBtn');}
-let curAddr='',allList=[],curList=[],curCoin='USDT',page=1,pageSize=20,showAllFlag=false;
-function setTop(isHome){document.getElementById('batchBtn').style.display=isHome?'':'none';document.getElementById('backupBtn').style.display=isHome?'none':'';}
-function goHome(){curAddr='';allList=[];curList=[];page=1;showAllFlag=false;document.getElementById('addrInput').value='';document.getElementById('home').style.display='block';document.getElementById('resultPage').style.display='none';setTop(true);window.scrollTo(0,0);}
-function isPay(){const str=document.getElementById('addrInput').value.trim();if(!str){alert(t('errEmpty'));return false;}const f=str.charAt(0);if(f!=='T'&&f!=='t'&&f!=='0'){alert(t('errEmpty'));return false;}if((f==='T'||f==='t')&&str.length!==34){alert(t('errLen34'));return false;}if(f==='0'&&str.length!==42){alert(t('errLen42'));return false;}return true;}
-async function doSearch(){if(!isPay())return;const v=document.getElementById('addrInput').value.trim();const btn=document.getElementById('searchBtn');btn.disabled=true;btn.textContent=t('searching');try{const r=await fetch('/api/address?address='+encodeURIComponent(v));const j=await r.json();if(j.error)throw new Error(j.error);curAddr=v;allList=j.transfers||[];document.getElementById('wAddr').textContent=v;document.getElementById('wTrx').textContent=j.trx??'—';document.getElementById('wUsdt').textContent=j.usdt??'—';document.getElementById('wEnergy').textContent=j.energy??'—';document.getElementById('wActive').textContent=j.activatedAt||'—';document.getElementById('wCny').textContent=j.cny??'—';const m=document.getElementById('wMulti');m.textContent=j.isMulti?t('yes'):t('no');m.className=j.isMulti?'red':'';document.getElementById('home').style.display='none';document.getElementById('resultPage').style.display='block';setTop(false);setCoin('USDT',document.querySelector('[data-coin="USDT"]'));}catch(e){alert(e.message||t('errFail'));}finally{btn.disabled=false;btn.textContent=t('searchBtn');}}
-function setCoin(coin,el){curCoin=coin;page=1;showAllFlag=false;document.querySelectorAll('.filter .tab').forEach(b=>b.classList.toggle('on',b.dataset.coin===coin));applyFilter(true);}
-function clearFilter(){document.getElementById('fType').value='all';document.getElementById('fMin').value='0.001';document.getElementById('fMax').value='';document.getElementById('fStart').value='';document.getElementById('fEnd').value='';applyFilter();}
-function applyFilter(keepPage){if(!keepPage)page=1;const type=document.getElementById('fType').value;const min=parseFloat(document.getElementById('fMin').value)||0;const max=parseFloat(document.getElementById('fMax').value);const s=document.getElementById('fStart').value,e=document.getElementById('fEnd').value;curList=allList.filter(t=>{if(t.coin!==curCoin)return false;const amt=Math.abs(t.amount||0);if(type==='in'&&t.amount<0)return false;if(type==='out'&&t.amount>0)return false;if(amt<min)return false;if(!isNaN(max)&&amt>max)return false;const d=(t.time||'').slice(0,10);if(s&&d<s)return false;if(e&&d>e)return false;return true;});render();}
-function render(){const total=curList.length;let inc=0,out=0;curList.forEach(t=>{if(t.amount>=0)inc+=t.amount;else out+=Math.abs(t.amount);});document.getElementById('summary').innerHTML=`${t('total')} ${total} ${t('income')} <span style="color:#15803d;font-weight:700">${inc.toLocaleString(undefined,{maximumFractionDigits:6})}</span> | ${t('expense')} <span style="color:#dc2626;font-weight:700">${out.toLocaleString(undefined,{maximumFractionDigits:6})}</span>。`;const list=showAllFlag?curList:curList.slice((page-1)*pageSize,page*pageSize);const tb=document.getElementById('tbody');tb.innerHTML='';document.getElementById('empty').style.display=total?'none':'block';list.forEach(t=>{const tr=document.createElement('tr');const isIn=t.amount>=0;const pill=curCoin==='USDT'?`<span class="pill ${isIn?'in':'out'}">${isIn?'+':'-'}${Math.abs(t.amount).toLocaleString(undefined,{maximumFractionDigits:6})}</span>`:`<span class="pill trx">${isIn?'+':'-'}${Math.abs(t.amount).toLocaleString(undefined,{maximumFractionDigits:6})}</span>`;tr.innerHTML=`<td>${t.time||''}</td><td><span class="addr">${t.counter||''}</span></td><td>${t.coin||''}</td><td>${pill}</td><td><span class="hash" onclick="toggleHash(this,'${t.blockHash||''}')">${shortHash(t.blockHash)}</span></td><td><span class="hash" onclick="toggleHash(this,'${t.txHash||''}')">${shortHash(t.txHash)}</span></td><td>${t.block||''}</td>`;tb.appendChild(tr);});const pg=document.getElementById('pager');pg.innerHTML='';if(!showAllFlag&&total>pageSize){const pages=Math.ceil(total/pageSize);const mk=(label,p)=>{const b=document.createElement('button');b.textContent=label;if(p===page)b.className='on';b.onclick=()=>{page=p;render();window.scrollTo(0,0);};pg.appendChild(b);};if(page>1)mk(t('prev'),page-1);for(let i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-page)<=2)mk(i,i);}if(page<pages)mk(t('next'),page+1);}}
-function shortHash(h){if(!h)return '—';return '*****'+String(h).slice(-6);}
-function toggleHash(el,full){if(!full)return;el.textContent=el.textContent===full?shortHash(full):full;}
-function showAll(){showAllFlag=true;render();}
-function copyAddr(){navigator.clipboard.writeText(curAddr).then(()=>alert(t('copied')));}
-function exportExcel(){let csv='\uFEFF交易时间,交易对象,币种,交易数量,区块哈希值,交易ID哈希,区块高度\n';curList.forEach(t=>{csv+=`"${t.time}","${t.counter}","${t.coin}","${t.amount}","${t.blockHash||''}","${t.txHash||''}","${t.block||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=curAddr+'_'+curCoin+'.csv';a.click();}
-document.getElementById('addrInput').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-setLang(curLang);
-(async()=>{try{const p=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,bitcoin,tron,ethereum&vs_currencies=cny').then(r=>r.json());if(p.tether?.cny)document.getElementById('pUsdt').textContent=p.tether.cny+' ¥';if(p.bitcoin?.cny)document.getElementById('pBtc').textContent=Number(p.bitcoin.cny).toLocaleString()+' ¥';if(p.tron?.cny)document.getElementById('pTrx').textContent=p.tron.cny+' ¥';if(p.ethereum?.cny)document.getElementById('pEth').textContent=Number(p.ethereum.cny).toLocaleString()+' ¥';}catch{}})();
-</script>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/mock.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/home.js"></script>
 </body>
 </html>

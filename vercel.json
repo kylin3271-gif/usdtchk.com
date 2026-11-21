@@ -1,1 +1,9 @@
-{ "functions": { "api/*.js": { "maxDuration": 30 } } }
+{
+  "cleanUrls": false,
+  "trailingSlash": false,
+  "functions": {
+    "api/[...path].js": {
+      "maxDuration": 30
+    }
+  }
+}

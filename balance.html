@@ -1,37 +1,14 @@
-<!DOCTYPE html>
-<html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>批量查余额和多签状态</title>
-<style>
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1000px;margin:0 auto;padding:20px;background:#f6f7f9}
-textarea{width:100%;height:140px;padding:12px;box-sizing:border-box;border:1px solid #ddd;border-radius:10px;font-size:14px}
-button{width:100%;padding:14px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;cursor:pointer}
-table{width:100%;border-collapse:collapse;background:#fff;margin-top:16px;font-size:13px}
-th,td{border-bottom:1px solid #eee;padding:10px;text-align:left;word-break:break-all}
-#msg{margin-top:12px;font-weight:bold}
-</style></head><body>
-<h2 style="text-align:center">批量查询余额和多签状态</h2>
-<p style="text-align:center;color:#666">每行一个地址，最多100个，支持TRX地址，数据由B提供</p>
-<textarea id="addrs" placeholder="一行一个地址"></textarea><br><br>
-<button onclick="go()">开始查询</button>
-<div id="msg"></div>
-<table id="t" style="display:none"><thead><tr><th>#</th><th>地址</th><th>TRX</th><th>USDT</th><th>是否多签</th><th>能量</th></tr></thead><tbody id="tb"></tbody></table>
-<script>
-async function go(){
-  const list = document.getElementById('addrs').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
-  if(!list.length){ document.getElementById('msg').textContent='请先粘贴地址'; return; }
-  document.getElementById('msg').textContent='查询中...';
-  try{
-    const r = await fetch('https://w44-ten.vercel.app/api/batch?addresses='+encodeURIComponent(list.join(',')));
-    const j = await r.json();
-    const tb = document.getElementById('tb'); tb.innerHTML='';
-    let sumTrx=0, sumUsdt=0, multiCount=0;
-    (j.results||[]).forEach((x,i)=>{
-      sumTrx+=Number(x.trx||0); sumUsdt+=Number(x.usdt||0);
-      if(x.multi==='是') multiCount++;
-      tb.innerHTML += `<tr><td>${i+1}</td><td>${x.address}</td><td>${x.trx}</td><td>${x.usdt}</td><td>${x.multi}</td><td>${x.energy}</td></tr>`;
-    });
-    document.getElementById('t').style.display='table';
-    document.getElementById('msg').textContent=`共 ${j.count} 个 · TRX 合计 ${sumTrx} · USDT 合计 ${sumUsdt} · 多签 ${multiCount} 个`;
-  }catch(e){ document.getElementById('msg').textContent='失败: '+e.message; }
-}
-</script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>批量查询余额和多签状态 - 查地址</title>
+<link rel="canonical" href="batch.html">
+<meta http-equiv="refresh" content="0;url=batch.html">
+<meta name="robots" content="noindex">
+</head>
+<body style="margin:0;background:#eef2f7;font:14px/1.7 -apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#6b7a90">
+<p style="max-width:520px;margin:60px auto;text-align:center">正在跳转到新的批量查询页…<br><a href="batch.html" style="color:#4e6ef2">点这里如果没自动跳转</a></p>
+</body>
+</html>
