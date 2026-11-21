@@ -175,7 +175,7 @@ td{padding:10px 8px;border-bottom:1px solid #f1f2f4}
         <th data-i18n="thCounter">交易对象</th>
         <th data-i18n="thCoin">币种</th>
         <th data-i18n="thAmt">交易数量</th>
-        <th data-i18n="thBlockHash">区块哈希值</th>
+        <th id="thBlockHash" data-i18n="thBlockHash">区块哈希值</th>
         <th data-i18n="thTxHash">交易ID哈希</th>
         <th data-i18n="thBlock">区块高度</th>
       </tr></thead>
@@ -204,12 +204,12 @@ id:{logo:"Cek Alamat",batchBtn:"Cek Massal Saldo & Multi-Sig",backup:"Situs Cada
 
 /* 原设计稿没有、本版新增的少量键，6 种语言补齐 */
 const EXTRA = {
-  zh:{ activated:'已激活', notActivated:'未激活', newSearch:'← 重新查询', loading:'加载中…', legal:'本站不提供 USDT / 虚拟货币兑换、代收代付与资金托管服务。', notice:'提示：哈希默认只显示末 6 位，点击可展开完整值；金额为链上原始记录，实际到账以链上确认为准。', priceLive:'数据来源 CoinGecko · 实时参考价', priceTipSample:'示例参考价（未接入行情源）', priceTipSub:'<br>（仅供查询不支持交易）' },
-  hant:{ activated:'已啟用', notActivated:'未啟用', newSearch:'← 重新查詢', loading:'載入中…', legal:'本站不提供 USDT / 虛擬貨幣兌換、代收代付與資金託管服務。', notice:'提示：雜湊預設只顯示末 6 位，點擊可展開完整值；金額為鏈上原始記錄，實際到帳以鏈上確認為準。', priceLive:'資料來源 CoinGecko · 即時參考價', priceTipSample:'示例參考價（未接入行情源）', priceTipSub:'<br>（僅供查詢不支援交易）' },
-  en:{ activated:'Activated', notActivated:'Not activated', newSearch:'← New search', loading:'Loading…', legal:'This site does not provide USDT / crypto exchange, payment collection or custody services.', notice:'Hashes show the last 6 characters by default — click to expand the full value. Amounts are raw on-chain records; the credited amount follows on-chain confirmation.', priceLive:'Live reference prices from CoinGecko', priceTipSample:'Sample reference prices (no live feed connected)', priceTipSub:'<br>(reference only · trading not supported)' },
-  th:{ activated:'เปิดใช้งานแล้ว', notActivated:'ยังไม่เปิดใช้งาน', newSearch:'← ค้นหาใหม่', loading:'กำลังโหลด…', legal:'เว็บนี้ไม่ให้บริการแลกเปลี่ยน USDT / คริปโต รับชำระเงิน หรือรับฝากทรัพย์สิน', notice:'แฮชแสดง 6 ตัวท้ายโดยค่าเริ่มต้น คลิกเพื่อดูค่าเต็ม จำนวนเป็นบันทึกบนเชนตามจริง', priceLive:'ราคาอ้างอิงเรียลไทม์จาก CoinGecko', priceTipSample:'ราคาอ้างอิงตัวอย่าง (ยังไม่ต่อแหล่งราคา)', priceTipSub:'<br>(สำหรับตรวจสอบเท่านั้น ไม่รองรับเทรด)' },
-  vi:{ activated:'Đã kích hoạt', notActivated:'Chưa kích hoạt', newSearch:'← Tìm lại', loading:'Đang tải…', legal:'Trang này không cung cấp dịch vụ đổi USDT / tiền mã hoá, thu hộ hay lưu ký tài sản.', notice:'Hash mặc định chỉ hiện 6 ký tự cuối, bấm để xem đầy đủ. Số lượng là bản ghi on-chain, số thực nhận theo xác nhận on-chain.', priceLive:'Giá tham khảo trực tiếp từ CoinGecko', priceTipSample:'Giá tham khảo mẫu (chưa nối nguồn giá)', priceTipSub:'<br>(Chỉ để tra cứu, không giao dịch)' },
-  id:{ activated:'Sudah aktif', notActivated:'Belum aktif', newSearch:'← Cari lagi', loading:'Memuat…', legal:'Situs ini tidak menyediakan penukaran USDT / kripto, penagihan pembayaran, atau layanan kustodian.', notice:'Hash default hanya menampilkan 6 karakter terakhir, klik untuk melihat penuh. Jumlah adalah catatan on-chain; jumlah diterima mengikuti konfirmasi on-chain.', priceLive:'Harga referensi langsung dari CoinGecko', priceTipSample:'Harga referensi contoh (belum terhubung sumber harga)', priceTipSub:'<br>(Hanya untuk pengecekan, bukan trading)' }
+  zh:{ activated:'已激活', notActivated:'未激活', newSearch:'← 重新查询', loading:'加载中…', legal:'本站不提供 USDT / 虚拟货币兑换、代收代付与资金托管服务。', notice:'提示：哈希默认只显示末 6 位，点击可展开完整值；TRON 数据源不提供区块哈希，该列自动隐藏；金额为链上原始记录，实际到账以链上确认为准。', priceLive:'数据来源 CoinGecko · 实时参考价', priceTipSample:'示例参考价（未接入行情源）', priceTipSub:'<br>（仅供查询不支持交易）' },
+  hant:{ activated:'已啟用', notActivated:'未啟用', newSearch:'← 重新查詢', loading:'載入中…', legal:'本站不提供 USDT / 虛擬貨幣兌換、代收代付與資金託管服務。', notice:'提示：雜湊預設只顯示末 6 位，點擊可展開完整值；TRON 資料源不提供區塊雜湊，該列自動隱藏；金額為鏈上原始記錄，實際到帳以鏈上確認為準。', priceLive:'資料來源 CoinGecko · 即時參考價', priceTipSample:'示例參考價（未接入行情源）', priceTipSub:'<br>（僅供查詢不支援交易）' },
+  en:{ activated:'Activated', notActivated:'Not activated', newSearch:'← New search', loading:'Loading…', legal:'This site does not provide USDT / crypto exchange, payment collection or custody services.', notice:'Hashes show the last 6 characters by default — click to expand the full value. The block-hash column hides itself on TRON data, which has no block hash. Amounts are raw on-chain records; the credited amount follows on-chain confirmation.', priceLive:'Live reference prices from CoinGecko', priceTipSample:'Sample reference prices (no live feed connected)', priceTipSub:'<br>(reference only · trading not supported)' },
+  th:{ activated:'เปิดใช้งานแล้ว', notActivated:'ยังไม่เปิดใช้งาน', newSearch:'← ค้นหาใหม่', loading:'กำลังโหลด…', legal:'เว็บนี้ไม่ให้บริการแลกเปลี่ยน USDT / คริปโต รับชำระเงิน หรือรับฝากทรัพย์สิน', notice:'แฮชแสดง 6 ตัวท้ายโดยค่าเริ่มต้น คลิกเพื่อดูค่าเต็ม คอลัมน์แฮชบล็อกจะซ่อนเองเมื่อข้อมูลมาจาก TRON ซึ่งไม่มีแฮชบล็อก จำนวนเป็นบันทึกบนเชนตามจริง', priceLive:'ราคาอ้างอิงเรียลไทม์จาก CoinGecko', priceTipSample:'ราคาอ้างอิงตัวอย่าง (ยังไม่ต่อแหล่งราคา)', priceTipSub:'<br>(สำหรับตรวจสอบเท่านั้น ไม่รองรับเทรด)' },
+  vi:{ activated:'Đã kích hoạt', notActivated:'Chưa kích hoạt', newSearch:'← Tìm lại', loading:'Đang tải…', legal:'Trang này không cung cấp dịch vụ đổi USDT / tiền mã hoá, thu hộ hay lưu ký tài sản.', notice:'Hash mặc định chỉ hiện 6 ký tự cuối, bấm để xem đầy đủ. Cột hash khối tự ẩn với dữ liệu TRON vì nguồn không trả hash khối. Số lượng là bản ghi on-chain, số thực nhận theo xác nhận on-chain.', priceLive:'Giá tham khảo trực tiếp từ CoinGecko', priceTipSample:'Giá tham khảo mẫu (chưa nối nguồn giá)', priceTipSub:'<br>(Chỉ để tra cứu, không giao dịch)' },
+  id:{ activated:'Sudah aktif', notActivated:'Belum aktif', newSearch:'← Cari lagi', loading:'Memuat…', legal:'Situs ini tidak menyediakan penukaran USDT / kripto, penagihan pembayaran, atau layanan kustodian.', notice:'Hash default hanya menampilkan 6 karakter terakhir, klik untuk melihat penuh. Kolom hash blok otomatis disembunyikan pada data TRON karena sumbernya tidak menyediakan hash blok. Jumlah adalah catatan on-chain; jumlah diterima mengikuti konfirmasi on-chain.', priceLive:'Harga referensi langsung dari CoinGecko', priceTipSample:'Harga referensi contoh (belum terhubung sumber harga)', priceTipSub:'<br>(Hanya untuk pengecekan, bukan trading)' }
 };
 Object.keys(EXTRA).forEach(k => { if (I18N[k]) Object.assign(I18N[k], EXTRA[k]); });
 
@@ -266,7 +266,7 @@ function setLang(l) {
 const $ = function (s, r) { return (r || document).querySelector(s); };
 const $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 const PAGE_SIZE = 20;
-const MAX_PAGES = 10;                       /* 后端单次最多取 200 条 */
+const MAX_PAGES = 125;                      /* 后端上限 2500 条 / 每页 20 条 */
 
 const S = { addr:'', coin:'USDT', page:1, total:0, rows:[], inVol:0, outVol:0, showAll:false, bal:null };
 
@@ -354,9 +354,9 @@ function renderBalance() {
 }
 
 /* ---------- 列表 ---------- */
-function currentQuery(page) {
+function currentQuery(page, size) {
   const dirMap = { all:'全部', in:'in', out:'out' };
-  return {
+  const q = {
     address: S.addr,
     type: S.coin,
     direction: dirMap[$('#fType').value] || '全部',
@@ -366,6 +366,8 @@ function currentQuery(page) {
     timestampEnd: dateToSec($('#fEnd').value, true),
     page: page
   };
+  if (size) q.size = size;      /* 大批量时按 200/批 取，减少请求数 */
+  return q;
 }
 
 function mapRow(r) {
@@ -398,7 +400,7 @@ function loadTxs(page) {
 
 function renderError(msg) {
   $('#summary').textContent = msg || t('errFail');
-  $('#tbody').innerHTML = '<tr><td colspan="7" class="tbl-empty">' + (msg || t('errFail')) + '</td></tr>';
+  $('#tbody').innerHTML = '<tr><td colspan="' + (S.hasHash === false ? 6 : 7) + '" class="tbl-empty">' + (msg || t('errFail')) + '</td></tr>';
   $('#empty').style.display = 'none';
   $('#pager').innerHTML = '';
 }
@@ -406,10 +408,17 @@ function renderError(msg) {
 function render() {
   const tb = $('#tbody');
   tb.innerHTML = '';
-  $('#summary').innerHTML = t('total') + ' ' + S.total + ' · ' + t('income') +
+  const maybeMore = S.total >= S.page * PAGE_SIZE && S.total < MAX_PAGES * PAGE_SIZE;   /* 满页=可能还有；到 2500 上限就不再标 + */
+  $('#summary').innerHTML = t('total') + ' ' + S.total + (maybeMore ? '+' : '') + ' · ' + t('income') +
     ' <span class="v-green">' + fmt(S.inVol) + '</span> ' + S.coin + ' · ' + t('expense') +
     ' <span class="v-red">' + fmt(S.outVol) + '</span> ' + S.coin;
   $('#empty').style.display = S.rows.length ? 'none' : 'block';
+
+  /* TRON 数据源不给 blockHash：整页都没有就整列隐藏，避免一列全是 — */
+  const hasHash = S.rows.some(function (x) { return !!x.blockHash; });
+  S.hasHash = hasHash;
+  const thBH = $('#thBlockHash');
+  if (thBH) thBH.style.display = hasHash ? '' : 'none';
 
   S.rows.forEach(function (r) {
     const tr = document.createElement('tr');
@@ -421,7 +430,7 @@ function render() {
       '<td><span class="addr">' + (r.counter || '') + '</span></td>' +
       '<td>' + r.coin + '</td>' +
       '<td>' + pill + '</td>' +
-      '<td><span class="hash" data-full="' + r.blockHash + '">' + shortHash(r.blockHash) + '</span></td>' +
+      (hasHash ? '<td><span class="hash" data-full="' + r.blockHash + '">' + shortHash(r.blockHash) + '</span></td>' : '') +
       '<td><span class="hash" data-full="' + r.txHash + '">' + shortHash(r.txHash) + '</span></td>' +
       '<td>' + (r.block || '—') + '</td>';
     tb.appendChild(tr);
@@ -443,7 +452,8 @@ function renderPager() {
   const box = $('#pager');
   box.innerHTML = '';
   if (S.showAll || S.total <= PAGE_SIZE) return;
-  const pages = Math.min(Math.ceil(S.total / PAGE_SIZE), MAX_PAGES);
+  const pages = Math.min(Math.max(1, Math.ceil(S.total / PAGE_SIZE)), MAX_PAGES);
+  const maybeMore = S.total >= S.page * PAGE_SIZE;
   const mk = function (label, p, on) {
     if (!p) {
       const sp = document.createElement('span');
@@ -464,7 +474,7 @@ function renderPager() {
   for (let p = from; p <= to; p++) mk(String(p), p, p === S.page);
   if (to < pages - 1) mk('…', 0, false);
   if (to < pages) mk(String(pages), pages, false);
-  if (S.page < pages) mk(t('next'), S.page + 1, false);
+  if ((S.page < pages || maybeMore) && S.page < pages + 2 && S.page < MAX_PAGES) mk(t('next'), S.page + 1, false);
 }
 
 /* ---------- 交互 ---------- */
@@ -484,20 +494,22 @@ function clearFilter() {
 }
 function showAll() {
   S.showAll = true;
-  const maxPages = Math.min(MAX_PAGES, Math.max(1, Math.ceil((S.total || PAGE_SIZE) / PAGE_SIZE)));
+  const LIMIT = 2500;     /* 后端单地址上限 */
+  const BATCH = 200;      /* 后端单次最多返回 200 条 */
   let acc = [];
+  $('#summary').textContent = t('loading');
   function step(p) {
-    if (p > maxPages) return Promise.resolve();
-    return post('txs', currentQuery(p)).then(function (j) {
+    return post('txs', currentQuery(p, BATCH)).then(function (j) {
       if (!j || j.code !== 1) return;
       const list = (j.data && j.data.transactionsList) || [];
       if (list.length) acc = acc.concat(list.map(mapRow));
-      if (list.length < PAGE_SIZE) return;
+      $('#summary').textContent = t('loading') + ' ' + acc.length;
+      if (list.length < BATCH || acc.length >= LIMIT) return;
       return step(p + 1);
     });
   }
   step(1).then(function () {
-    if (acc.length) S.rows = acc;
+    if (acc.length) { S.rows = acc; S.total = Math.max(S.total || 0, acc.length); }
     render();
   }).catch(function (e) { renderError(e.message); });
 }
@@ -507,11 +519,12 @@ function copyAddr() {
 function exportExcel() {
   const rows = S.rows;
   if (!rows.length) { alert(t('empty')); return; }
+  const withHash = rows.some(function (r) { return !!r.blockHash; });
   let csv = '\uFEFF' + t('thTime') + ',' + t('thCounter') + ',' + t('thCoin') + ',' + t('thAmt') + ',' +
-    t('thBlockHash') + ',' + t('thTxHash') + ',' + t('thBlock') + '\n';
+    (withHash ? t('thBlockHash') + ',' : '') + t('thTxHash') + ',' + t('thBlock') + '\n';
   rows.forEach(function (r) {
-    csv += '"' + r.time + '","' + r.counter + '","' + r.coin + '","' + r.amount + '","' +
-      r.blockHash + '","' + r.txHash + '","' + r.block + '"\n';
+    csv += '"' + r.time + '","' + r.counter + '","' + r.coin + '","' + r.amount + '",' +
+      (withHash ? '"' + r.blockHash + '",' : '') + '"' + r.txHash + '","' + r.block + '"\n';
   });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
