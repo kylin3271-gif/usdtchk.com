@@ -79,22 +79,20 @@ export default async function handler(req, res) {
         energy = Math.max(0, (e.EnergyLimit || 0) - (e.EnergyUsed || 0));
       }
 
-      // 4. 查 USDT，调合约 balanceOf
-      const r3 = await fetch(TG + '/wallet/triggerconstantcontract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          owner_address: addr,
-          contract_address: USDT,
-          function_selector: 'balanceOf(address)',
-          parameter: addr,
-          visible: true
-        })
-      });
+      // 4. 查 USDT，用 v1/accounts 的 trc20
+      const r3 = await fetch(TG + '/v1/accounts/' + addr);
       const c = await r3.json();
-      const hex = c.constant_result && c.constant_result[0];
-      if (hex) {
-        usdt = parseInt(hex, 16) / 1e6;
+      const d = c && c.data && c.data[0];
+      if (d && d.trc20) {
+        if (Array.isArray(d.trc20)) {
+          d.trc20.forEach(obj => {
+            if (obj && obj[USDT] !== undefined) {
+              usdt = parseFloat(obj[USDT]) / 1e6;
+            }
+          });
+        } else if (typeof d.trc20 === 'object' && d.trc20[USDT] !== undefined) {
+          usdt = parseFloat(d.trc20[USDT]) / 1e6;
+        }
       }
     } catch (e) {
       // 单个地址失败不影响其他
