@@ -15,6 +15,10 @@ const ERR_MAP = {
 
 /** 把 Vercel 的 query/path 还原成 '/api/xxx' */
 function resolvePath(req) {
+  /* 优先从 req.url 取真实路径（Vercel 不同版本对 catch-all 参数注入不一致） */
+  const rawUrl = String(req.url || '');
+  const pathOnly = rawUrl.split('?')[0];
+  if (pathOnly && pathOnly.startsWith('/api/')) return pathOnly.replace(/\/+$/, '');
   const raw = req.query && req.query.path;
   const seg = [].concat(raw || []).filter(Boolean).join('/');
   return '/api/' + seg;
