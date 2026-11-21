@@ -24,23 +24,18 @@ export default async function handler(req, res) {
   for (const addr of addrs) {
     let trx = 0, usdt = 0, energy = 0, multi = '否';
     try {
-      // 1. TRX + 多签
       const r1 = await fetch(TG + '/wallet/getaccount', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ address: addr, visible: true }) });
       const a = await r1.json();
       if (a && typeof a.balance === 'number') trx = a.balance / 1e6;
-      // 多签：owner_permission 或 active_permission 里 keys > 1
       let keys = 0;
       if (a.owner_permission && a.owner_permission.keys) keys += a.owner_permission.keys.length;
       if (Array.isArray(a.active_permission)) a.active_permission.forEach(p => { if (p.keys) keys += p.keys.length; });
       if (keys > 1) multi = '是';
 
-      // 2. 能量
       const r2 = await fetch(TG + '/wallet/getaccountresource', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ address: addr, visible: true }) });
       const e = await r2.json();
       if (e) energy = Math.max(0, (e.EnergyLimit||0) - (e.EnergyUsed||0));
 
-      // 3. USDT - 调合约 balanceOf(address)
-      // 把 T 开头地址转 hex: 用 TronGrid 的 wallet/address2hex? 简单办法：直接用 triggerconstantcontract 传 visible=true 也支持 base58
       const r3 = await fetch(TG + '/wallet/triggerconstantcontract', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ owner_address: addr, contract_address: USDT, function_selector: 'balanceOf(address)', parameter: addr, visible: true }) });
       const c = await r3.json();
       const hex = c.constant_result && c.constant_result[0];
