@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>批量查询余额和多签状态 - 查地址</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f3f8;color:#111;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:40px;color-scheme:light}
+a{color:inherit;text-decoration:none}
+.top{background:#fff;border-bottom:1px solid #eef1f5}.top-in{max-width:1100px;margin:0 auto;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;cursor:pointer}.logo i{width:28px;height:28px;border-radius:50%;background:#FF0013;color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+h1{font-size:24px;text-align:center;margin:28px 0 8px}.sub{text-align:center;color:#666;font-size:13px;margin-bottom:16px}
+.card{background:#fff;border-radius:14px;padding:16px;margin:16px 0}
+textarea{width:100%;min-height:140px;border:1px solid #e2e6ec;border-radius:10px;padding:12px;font-size:14px;outline:none;resize:vertical;background:#fff;color:#111}
+.btn{background:#4e6ef2;color:#fff;border:0;border-radius:10px;padding:12px 28px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;min-width:640px}th{color:#666;font-weight:500;text-align:left;padding:9px 8px;border-bottom:1px solid #eee}td{padding:10px 8px;border-bottom:1px solid #f1f2f4;word-break:break-all}.t-wrap{overflow-x:auto}
+.pill{border-radius:999px;padding:3px 10px;font-weight:700}.pill.yes{background:#fee2e2;color:#b91c1c}.pill.no{background:#dcfce7;color:#15803d}
+.foot{font-size:12px;color:#aaa;text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in"><a href="/" class="logo"><i>T</i><span>查地址</span></a><span style="font-size:12px;color:#888">批量查询余额和多签状态</span></div></div>
+<div class="wrap">
+<h1>批量查询余额和多签状态</h1>
+<p class="sub">每行一个地址，最多 100 个，支持 TRX 地址</p>
+<div class="card">
+<textarea id="addrs" placeholder="每行一个地址，例如：&#10;TNLE...&#10;TXYZ..."></textarea>
+<button class="btn" id="qBtn" onclick="doBatch()">开始查询</button>
+<div id="summary" style="font-size:13px;margin-top:12px;color:#333"></div>
+<div class="t-wrap"><table><thead><tr><th>#</th><th>地址</th><th>TRX</th><th>USDT</th><th>是否多签</th><th>能量</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div id="empty" style="text-align:center;color:#888;padding:20px">输入地址后点开始查询</div>
+</div>
+<p class="foot">数据来源：TronGrid + Tronscan · 仅供查询</p>
+</div>
+<script>
+async function doBatch(){
+  const lines=document.getElementById('addrs').value.split('\n').map(s=>s.trim()).filter(s=>s.startsWith('T')&&s.length===34);
+  if(!lines.length){alert('请输入至少一个 TRX 地址');return;}
+  const btn=document.getElementById('qBtn');btn.disabled=true;btn.textContent='查询中…';
+  const tb=document.getElementById('tbody');tb.innerHTML='';document.getElementById('empty').style.display='none';
+  let totalTrx=0,totalUsdt=0,multiCount=0;
+  for(let i=0;i<lines.length;i++){
+    const addr=lines[i];
+    let trx=0,usdt=0,energy=0,multi='否';
+    try{
+      const b=await fetch('https://api.trongrid.io/v1/accounts/'+addr).then(r=>r.json());
+      const d=b.data&&b.data[0];
+      if(d){trx=(d.balance||0)/1e6;if(d.trc20){const arr=d.trc20.find(x=>x['TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t']);if(arr)usdt=parseFloat(arr['TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t']||0)/1e6;}}
+    }catch(e){}
+    try{
+      const a=await fetch('https://apilist.tronscanapi.com/api/account?address='+addr).then(r=>r.json());
+      if(a){if(!trx)trx=(a.balance||0)/1e6;if(!usdt&&a.trc20token_balances){const u=a.trc20token_balances.find(x=>x.tokenId==='TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t');if(u)usdt=parseFloat(u.balance||0);}}
+    }catch(e){}
+    try{
+      const p=await fetch('https://api.trongrid.io/wallet/getaccount',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:addr,visible:true})}).then(r=>r.json());
+      if(p&&p.permission){const o=p.permission.owner;if(o&&o.keys&&o.keys.length>1)multi='是';if(p.permission.active&&p.permission.active.length>0)multi='是';}
+    }catch(e){}
+    try{
+      const e=await fetch('https://api.trongrid.io/wallet/getaccountresource',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:addr,visible:true})}).then(r=>r.json());
+      if(e)energy=Math.max(0,(e.EnergyLimit||0)-(e.EnergyUsed||0));
+    }catch(e){}
+    totalTrx+=trx;totalUsdt+=usdt;if(multi==='是')multiCount++;
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(i+1)+'</td><td style="font-family:monospace">'+addr+'</td><td>'+trx.toLocaleString()+'</td><td>'+usdt.toLocaleString(undefined,{maximumFractionDigits:6})+'</td><td><span class="pill '+(multi==='是'?'yes':'no')+'">'+multi+'</span></td><td>'+energy.toLocaleString()+'</td>';
+    tb.appendChild(tr);
+  }
+  document.getElementById('summary').innerHTML='共 <b>'+lines.length+'</b> 个 · TRX 合计 <b>'+totalTrx.toLocaleString()+'</b> · USDT 合计 <b>'+totalUsdt.toLocaleString(undefined,{maximumFractionDigits:6})+'</b> · 多签 <b>'+multiCount+'</b> 个';
+  btn.disabled=false;btn.textContent='开始查询';
+}
+</script>
+</body>
+</html>
